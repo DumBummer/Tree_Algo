@@ -135,7 +135,19 @@ class TreeApp(tk.Tk):
             x,y=point(n)
             for child in (n.left,n.right):
                 if child:
-                    xx,yy=point(child);c.create_line(x,y,xx,yy,fill='#344b50',width=max(2,7*self.scale));c.create_line(x,y,xx,yy,fill='#c0d2d1',width=max(1,2*self.scale))
+                    xx,yy=point(child)
+                    # A cubic Bezier joins the node rims with a soft branch curve.
+                    radius=27*self.scale
+                    start_y=y+radius
+                    end_y=yy-radius
+                    bend=(end_y-start_y)*0.5
+                    curve=(x,start_y,x,start_y+bend,xx,end_y-bend,xx,end_y)
+                    c.create_line(*curve,smooth='raw',splinesteps=36,
+                                  capstyle=tk.ROUND,fill='#344b50',
+                                  width=max(2,7*self.scale))
+                    c.create_line(*curve,smooth='raw',splinesteps=36,
+                                  capstyle=tk.ROUND,fill='#c0d2d1',
+                                  width=max(1,2*self.scale))
         for n in self.positions:
             x,y=point(n);r=27*self.scale;color=GOLD if n is self.highlight else GREEN if n is self.root_node else BLUE
             c.create_oval(x-r-5,y-r-5,x+r+5,y+r+5,outline=color,width=1)
